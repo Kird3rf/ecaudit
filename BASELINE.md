@@ -47,3 +47,22 @@ Command:
 | **Total** | **55** | **16** | **2** | **37** | **29.1%** |
 
 PIT line coverage over the target classes: 38/140 (27%).
+
+## After adding `TestSizeTrackedFileQueue` (7 tests)
+
+Only `logger.SizeTrackedFileQueue` was targeted; the other three classes are unchanged.
+
+- ecaudit tests run: 371 -> 378 (0 failures, 1 skipped)
+
+| Metric (`logger.SizeTrackedFileQueue`) | Before | After |
+|---|---:|---:|
+| JaCoCo line coverage | 100.0% (13/13) | 100.0% (13/13) |
+| JaCoCo branch coverage | 50.0% (1/2) | 100.0% (2/2) |
+| PIT mutants generated | 6 | 6 |
+| PIT mutants killed | 6 | 6 |
+| PIT mutation score | 100.0% | 100.0% |
+
+Note: the class was already fully covered (indirectly, via the rotating store-file
+listener tests) before direct tests existed. The new tests add the uncovered `poll()`
+on an empty queue branch and document that polling a file deleted after `offer()`
+leaves its bytes in `accumulatedFileSize()` (`File.length()` is 0 for a missing file).
