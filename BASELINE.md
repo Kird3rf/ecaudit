@@ -66,3 +66,54 @@ Note: the class was already fully covered (indirectly, via the rotating store-fi
 listener tests) before direct tests existed. The new tests add the uncovered `poll()`
 on an empty queue branch and document that polling a file deleted after `offer()`
 leaves its bytes in `accumulatedFileSize()` (`File.length()` is 0 for a missing file).
+
+## After adding `TestStatementResourceAdapter` (25 tests)
+
+Only `entry.factory.StatementResourceAdapter` was targeted. Tests parse real Cassandra 5.0.9
+statements via `QueryProcessor.parseStatement` (raw) and `Raw.prepare(ClientState.forInternalCalls())`
+(prepared), with no keyspace schema loaded.
+
+- ecaudit tests run: 378 -> 403 (2 failures, 1 error, 1 skipped) — all three failures are
+  production defects, left in place deliberately (see below)
+
+| Metric (`entry.factory.StatementResourceAdapter`) | Before | After |
+|---|---:|---:|
+| JaCoCo line coverage | 1.0% (1/100) | 58.0% (58/100) |
+| JaCoCo branch coverage | 0.0% (0/18) | 55.6% (10/18) |
+| PIT mutants generated | 37 | 37 |
+| PIT mutants killed | 0 | 26 |
+| PIT mutants survived | 0 | 0 |
+| PIT mutants with no coverage | 37 | 11 |
+| PIT mutation score | 0.0% | 70.3% |
+
+**26 of 37 mutants killed**, up from 0.
+
+PIT measurement note: PIT 1.30.0 refuses to run on a red suite and runs a `@BeforeClass` test
+class as one atomic unit, so `-DskipFailingTests=true` cannot skip individual methods. The PIT
+numbers above were measured with the three defect-revealing tests temporarily `@Ignore`d in the
+working tree only; that edit was reverted and is not committed.
+
+The 11 remaining no-coverage mutants are all in branches that need a live schema (a materialized
+view / index whose base table `View.findBaseTable` / `Schema.instance` can find — lines 159, 169-175,
+193-209, 260, 282) plus the raw create-aggregate path (line 348) that currently throws (defect 2).
+
+### Production defects revealed (not fixed)
+
+1. `resolveBaseTableResource(AlterViewStatement.Raw)` and `resolveBaseTableResource(DropViewStatement.Raw)`:
+   when the base table cannot be found they return `DataResource.keyspace(name.getName())`, i.e. a
+   keyspace resource named after the *view* (`data/mv`), instead of `DataResource.keyspace(name.getKeyspace())`
+   (`data/ks1`) as the prepared overloads and `DropIndexStatement.Raw` do.
+   Failing tests: `testResolveBaseTableResourceFromAlterViewRawFallsBackToKeyspace`,
+   `testResolveBaseTableResourceFromDropViewRawFallsBackToKeyspace`.
+2. `resolveAggregateKeyspaceResource(CreateAggregateStatement.Raw)` reads a private field named `name`,
+   but in Cassandra 5.0.9 `CreateAggregateStatement.Raw` calls it `aggregateName`, so the call throws
+   `IllegalArgumentException: Cannot locate field name on class ...CreateAggregateStatement$Raw`.
+   Failing test: `testResolveAggregateKeyspaceResourceFromCreateAggregateRaw`.
+
+### Open question (not asserted)
+
+`FieldUtils.readField` throws `IllegalArgumentException` for an *absent* field; the adapter only
+catches `IllegalAccessException` and wraps it in `CassandraAuditException`. So an absent field
+(defect 2 above, and `testResolveRoleResourceFailsWhenRoleFieldIsAbsent`) escapes unwrapped. The
+test only asserts that a `RuntimeException` mentioning the field name is thrown; whether it should
+be a `CassandraAuditException` is undecided.

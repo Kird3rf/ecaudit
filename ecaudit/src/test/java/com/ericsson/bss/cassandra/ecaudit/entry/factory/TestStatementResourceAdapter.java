@@ -17,6 +17,7 @@ package com.ericsson.bss.cassandra.ecaudit.entry.factory;
 
 import java.util.Collections;
 
+import org.apache.cassandra.audit.AuditLogContext;
 import org.apache.cassandra.auth.DataResource;
 import org.apache.cassandra.auth.FunctionResource;
 import org.apache.cassandra.auth.RoleResource;
@@ -296,6 +297,7 @@ public class TestStatementResourceAdapter
         return (T) QueryProcessor.parseStatement(cql);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T extends CQLStatement> T prepare(String cql)
     {
         return (T) QueryProcessor.parseStatement(cql).prepare(ClientState.forInternalCalls());
@@ -321,7 +323,7 @@ public class TestStatementResourceAdapter
         }
 
         @Override
-        public org.apache.cassandra.audit.AuditLogContext getAuditLogContext()
+        public AuditLogContext getAuditLogContext()
         {
             return null;
         }
