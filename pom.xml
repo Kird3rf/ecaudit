@@ -238,10 +238,50 @@
                     <version>${org.pitest.pitest-maven.version}</version>
                     <configuration>
                         <timestampedReports>false</timestampedReports>
-                         <mutators>
+                        <mutators>
                             <mutator>DEFAULTS</mutator>
                             <mutator>EXPERIMENTAL_NAKED_RECEIVER</mutator>
                         </mutators>
+                        <targetClasses>
+                            <param>com.ericsson.bss.cassandra.ecaudit.logger.SizeTrackedFileQueue</param>
+                            <param>com.ericsson.bss.cassandra.ecaudit.logger.FileQueueBootstrapper</param>
+                            <param>com.ericsson.bss.cassandra.ecaudit.auth.AuditPasswordAuthenticator</param>
+                            <param>com.ericsson.bss.cassandra.ecaudit.entry.factory.StatementResourceAdapter</param>
+                        </targetClasses>
+                        <failWhenNoMutations>false</failWhenNoMutations>
+                        <outputFormats>
+                            <outputFormat>HTML</outputFormat>
+                            <outputFormat>XML</outputFormat>
+                        </outputFormats>
+                        <jvmArgs>
+                            <jvmArg>-Djdk.attach.allowAttachSelf=true</jvmArg>
+                            <jvmArg>--add-exports=java.base/java.lang.ref=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.management.rmi/com.sun.jmx.remote.internal.rmi=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.rmi/sun.rmi.server=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=java.sql/java.sql=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=jdk.attach/sun.tools.attach=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/java.lang.module=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/java.io=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/java.nio=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/jdk.internal.math=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/jdk.internal.module=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/jdk.internal.util.jar=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED</jvmArg>
+                            <jvmArg>--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</jvmArg>
+                        </jvmArgs>
                     </configuration>
                 </plugin>
                 <plugin>
