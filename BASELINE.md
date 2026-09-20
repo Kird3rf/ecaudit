@@ -1,5 +1,10 @@
 # Test measurement baseline
 
+> **Note: the test suite on this fork is intentionally red.**
+> `TestStatementResourceAdapter.testResolveAggregateKeyspaceResourceFromCreateAggregateRaw` fails
+> deliberately to pin a production defect that is documented below (see "Production defect
+> revealed (not fixed)"). This is expected and not a regression.
+
 Measurements taken on the `ecaudit` module before any new tests were written.
 
 ## Build
